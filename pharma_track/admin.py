@@ -22,4 +22,9 @@ class DrugAdmin(admin.ModelAdmin):
     )
     inlines = [StudyInline,]
 
+
+class StudyAdmin(admin.ModelAdmin):
+    model = Study
+
 admin.site.register(Drug, DrugAdmin)
+admin.site.register(Study, StudyAdmin)
