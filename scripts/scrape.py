@@ -7,8 +7,9 @@ import pandas as pd
 from pharma_track.models import Drug
 
 
-def _fetch_data(request_url, regex) -> list:
-    """ Make request and fetch data
+def _fetch_data(request_url, regex):
+    """
+    Make request and fetch data
 
     :param request_url: request url
     :param regex: regex string to get data
@@ -18,7 +19,8 @@ def _fetch_data(request_url, regex) -> list:
     soup = BeautifulSoup(r.content, features="lxml")
     return soup.find_all("div", {"class": regex})
 
-def _roche_scrap() -> pd.DataFrame:
+
+def _roche_scrap():
     """ Crawling from roche
 
     :return: pandas data
@@ -73,12 +75,8 @@ def _roche_scrap() -> pd.DataFrame:
     df = pd.DataFrame(data)
     return df
 
-def _gilead_get_phase(p):
-    """ Get phase label name
 
-    :param p:
-    :return:
-    """
+def _gilead_get_phase(p):
     return {
         'phase-1': 'Phase 1',
         'phase-2': 'Phase 2',
@@ -86,7 +84,8 @@ def _gilead_get_phase(p):
         'phase-4': 'Phase 4',
     }.get(p, p)
 
-def _gilead_scrap() -> pd.DataFrame:
+
+def _gilead_scrap():
     """ Crawling from gilead
 
     :return: pandas data
@@ -149,7 +148,8 @@ def _gilead_scrap() -> pd.DataFrame:
     df = pd.DataFrame(data)
     return df
 
-def save(data):
+
+def save_drug(data):
     drug = Drug.objects.filter(name=data.name, sub_name=data.sub_name, indication=data.indication).first()
     if not drug:
         Drug(name=data.name, sub_name=data.sub_name, indication=data.indication, phase=data.phase,
@@ -164,8 +164,10 @@ def save(data):
 def run():
     roche_data = _roche_scrap()
     for data in roche_data.itertuples():
-        save(data)
+        save_drug(data)
 
     gilead_data = _gilead_scrap()
     for data in gilead_data.itertuples():
-        save(data)
+        save_drug(data)
+
+

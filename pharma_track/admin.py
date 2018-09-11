@@ -1,6 +1,11 @@
 from django.contrib import admin
-from pharma_track.models import Drug
+from pharma_track.models import Drug, Study
 
+
+class StudyInline(admin.TabularInline):
+    model = Study
+    extra = 0
+    min_num = 0
 
 class DrugAdmin(admin.ModelAdmin):
     model = Drug
@@ -15,5 +20,6 @@ class DrugAdmin(admin.ModelAdmin):
     search_fields = (
         'name',
     )
+    inlines = [StudyInline,]
 
 admin.site.register(Drug, DrugAdmin)
