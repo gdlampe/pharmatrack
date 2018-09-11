@@ -20,9 +20,9 @@ DATABASES = {
     }
 }
 
-LANGUAGE_CODE = 'en-US'
+LANGUAGE_CODE = 'en'
 
-TIME_ZONE = "Europe/Amsterdam"
+TIME_ZONE = "UTC"
 
 #STATIC_ROOT = '/home/username/webapps/<staticdir>/'
 STATIC_ROOT = ''
