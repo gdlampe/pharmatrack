@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INSTALLED_APPS = [
     'website',
-    'pharmatrack',
+    'pharma_track',
     'bootstrap4',
     'registration',
     'dbbackup',
@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'debug_toolbar',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -159,7 +159,7 @@ LOGGING = {
             'propagate': True,
             'level': 'ERROR',
         },
-        'pharmatrack': {
+        'pharma_track': {
             'handlers': ['file_debug', 'file_error', 'console'],
             'propagate': True,
             'level': 'DEBUG',
