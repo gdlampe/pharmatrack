@@ -2,7 +2,7 @@
 Django settings for website project.
 """
 
-import os
+from website.local_settings import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -61,20 +61,15 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+if DEBUG:
+    AUTH_PASSWORD_VALIDATORS = []
+else:
+    AUTH_PASSWORD_VALIDATORS = [
+        {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },  # noqa
+        {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },  # noqa
+        {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },  # noqa
+        {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },  # noqa
+    ]
 
 
 # Internationalization
@@ -97,13 +92,6 @@ LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = ['django-dual-authentication.backends.DualAuthentication']
 # You can authenticate your users by 'username', 'email', 'both'. Default: 'both'.
 AUTHENTICATION_METHOD = 'both'
-
-
-# Local settings
-# Allow any settings to be defined in local_settings.py which should be
-# ignored in your version control system allowing for settings to be
-# defined per machine.
-from website.local_settings import *
 
 
 # Logging
