@@ -59,17 +59,19 @@ def _study_scrap(drug):
 
     if drug.phase:
         try:
-            phase = int(drug.phase.split()[1])
+            phase = int(drug.phase.split()[1]) - 1
         except Exception:
             pass
         else:
             params['phase'] = phase
-
+    print(params)
     r = requests.get(request_url, params=params)
     df = pd.read_csv(io.StringIO(r.text), skiprows=1, names=headers)
     return df
 
 def save_study(drug, data):
+    if data.nct_id == 'nan':
+        return
     study = drug.studies.filter(nct_id=data.nct_id).first()
     if not study:
         study = Study()
