@@ -1,0 +1,12 @@
+{% extends "registration/registration_base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+  {% with page_title="Sorry. Registration is currently closed :(" %}
+  {% include "website/items/page_title.html" %}
+  {% endwith %}
+
+</div>
+{% endblock %}

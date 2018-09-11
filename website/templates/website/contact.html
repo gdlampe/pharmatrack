@@ -1,0 +1,22 @@
+{% extends "website/base.html" %}
+
+{% block title %}Contact {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  {% with page_title="Contact" %}
+  {% include "website/items/page_title.html" %}
+  {% endwith %}
+
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <p>This is an example contact page. The contact email is defined in 'local_settings.py'.</p>
+      <p>You can contact us at <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>.</p>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

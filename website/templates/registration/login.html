@@ -1,0 +1,39 @@
+{% extends "registration/registration_base.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+<div class="container">
+
+  {% with page_title="Log in" %}
+  {% include "website/items/page_title.html" %}
+  {% endwith %}
+
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      {% bootstrap_form_errors form %}
+      <form action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_label "Username or email" label_for="id_username" %}
+        {% bootstrap_field form.username show_label=False %}
+        {% bootstrap_field form.password %}
+        {% buttons %}
+        <button type="submit" class="btn btn-primary" title="Log in">
+          Log in
+        </button>
+        {% endbuttons %}
+        <input name="next" type="hidden" value="{{ next }}">
+      </form>
+
+      <a href="/accounts/password/reset">Forgot your password?</a>
+      <hr>
+      <h4>
+      New? <a href="/accounts/register/">Sign up</a> first!
+      </h4>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

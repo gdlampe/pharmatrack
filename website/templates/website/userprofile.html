@@ -1,0 +1,47 @@
+{% extends "website/base.html" %}
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% block title %}Userprofile {{ user.username }} {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  {% if messages %}
+  <div class="vertical-spacer-20"></div>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      {% for message in messages %}
+      <div class="alert alert-success"><a href="#" class="close" data-dismiss="alert">&times;</a><span>{{ message }}</span></div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% with page_title=user.username %}
+  {% include "website/items/page_title.html" %}
+  {% endwith %}
+
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      {% bootstrap_form_errors form %}
+      <form method="post" action="">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+        <button type="submit" class="btn btn-primary" title="Save userprofile">
+          Save
+        </button>
+        {% endbuttons %}
+      </form>
+
+      <a class="btn btn-success" role="button" href="/accounts/password/change" title="Change password">Change password</a>
+
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

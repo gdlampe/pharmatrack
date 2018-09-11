@@ -1,0 +1,48 @@
+{% extends "registration/registration_base.html" %}
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+<div class="container">
+
+  {% with page_title="Sign up" %}
+  {% include "website/items/page_title.html" %}
+  {% endwith %}
+
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+
+      {% if registered %}
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <h4>You have successfully registered!</h4>
+            <h4>Please <a href="/accounts/login/">Log in</a> to get started.</h4>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if form %}
+      <div class="row">
+        <div class="col-md-12">
+          {% bootstrap_form_errors form %}
+          <form action="" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form show_help=False %}
+            {% buttons %}
+              <button type="submit" class="btn btn-success" title="Sign up">
+                Sign up
+              </button>
+            {% endbuttons %}
+        </form>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
