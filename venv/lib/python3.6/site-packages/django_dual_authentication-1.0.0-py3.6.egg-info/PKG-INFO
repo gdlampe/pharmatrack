@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: django-dual-authentication
+Version: 1.0.0
+Summary: Allows authentication with either a username or an email address.
+Home-page: https://github.com/Zeioth/django-dual-authentication
+Author: Zeioth
+Author-email: test@gmail.com
+License: MIT
+Description: Allows authentication with either a username or an email address.
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
