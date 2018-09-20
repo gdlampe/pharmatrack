@@ -142,7 +142,9 @@ def _gilead_scrap():
             data['phase'].append(None)
 
         # Parse Company
-        data['company'].append(None)
+        # @TODO: Check company name from crawled data for company
+        company = 'Gilead Sciences'
+        data['company'].append(company)
 
 
     df = pd.DataFrame(data)
