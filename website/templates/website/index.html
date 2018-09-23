@@ -1,21 +1,109 @@
 {% extends "website/base.html" %}
-
+{% load static %}
 {% block title %}Homepage {{ block.super }}{% endblock %}
-
+{% block headcontent_end %}
+    <link rel="stylesheet" href="{% static 'css/progress-tracker.css' %}" type="text/css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        $( "#drug-name" ).autocomplete({
+          source: "{% url 'drug-autocomplete' %}",
+        });
+        $( "#company-name" ).autocomplete({
+          source: "{% url 'company-autocomplete' %}",
+        });
+        $( "#status-state" ).autocomplete({
+          source: "{% url 'status-autocomplete' %}",
+        });
+    } );
+    </script>
+    <script type="text/javascript">
+          $( function() {
+            $(document).on('click', "#search", function(){
+              var d = $("#drug-name").val();
+              var c = $("#company-name").val();
+              var s = $("#status-state").val();
+              $.ajax({
+                  url: '/api/search/',
+                  type: 'post',
+                  data: {
+                      d: d,
+                      c: c,
+                      s: s
+                  },
+                  headers: {
+                      "X-CSRFToken": '{{ csrf_token }}'
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                      console.log(data);
+                      $("#search-results").html(data.drugs);
+                  }
+              });
+            });
+          } );
+    </script>
+    <script type="text/javascript">
+          $( function() {
+            $(document).on('click', "#export-csv", function(){
+              var d = $("#drug-name").val();
+              var c = $("#company-name").val();
+              var s = $("#status-state").val();
+              $.ajax({
+                  url: '/api/export/',
+                  type: 'post',
+                  data: {
+                      d: d,
+                      c: c,
+                      s: s
+                  },
+                  headers: {
+                      "X-CSRFToken": '{{ csrf_token }}'
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                      window.location.href = data.url;
+                  }
+              });
+            });
+          } );
+    </script>
+{% endblock %}
 {% block content %}
 <div class="container">
-
-  {% with page_title="Homepage" %}
-  {% include "website/items/page_title.html" %}
-  {% endwith %}
-
-  <div class="row">
-    <div class="col-sm-12">
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent erat arcu, molestie eu augue quis, faucibus venenatis urna. Aliquam ultrices sit amet metus et blandit. Suspendisse eleifend erat sed augue malesuada gravida. Donec sodales dictum mauris accumsan rhoncus. Sed non mauris elementum risus tempor porta sed congue eros. Nunc tempor felis quis erat lobortis tincidunt non quis sapien. Aenean sed maximus odio. Aliquam et felis ut nulla pretium varius. Aliquam dapibus fermentum metus ac pharetra. Sed tincidunt, ante quis vestibulum eleifend, tortor libero tristique velit, id ultricies ante massa eget ante. Phasellus posuere quam at quam aliquet dapibus. Morbi nec cursus libero. Ut mauris augue, interdum at quam quis, ultricies imperdiet eros. Nulla ac volutpat metus.</p>
-
-      <p>Ut consequat pharetra urna vel viverra. Sed elementum mauris id nisl sagittis, quis dictum neque egestas. Nulla dapibus justo non turpis tristique laoreet quis ut ante. Donec sit amet risus aliquam, scelerisque mauris rhoncus, viverra tellus. Proin arcu ipsum, maximus accumsan iaculis vitae, vulputate in eros. Proin est odio, vulputate id nulla vel, dignissim congue mi. Ut sit amet enim ac sem consectetur porta a in odio. Donec vel consectetur velit. Morbi iaculis aliquam euismod. Duis ut mollis urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur finibus, sem at imperdiet placerat, sapien dui venenatis mi, id hendrerit justo sapien iaculis justo. Aliquam sit amet mi in libero faucibus pharetra. </p>
+	<div class="row">
+		<div class="col-md-12">
+            <div class="input-group" id="adv-search">
+                <input type="text" class="form-control" placeholder="Search for drugs" id="drug-name" name="d"/>
+                <div class="input-group-btn">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown dropdown-lg">
+                            <button type="button" class="btn btn-default dropdown-toggle border" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu" style="left: 2.5em">
+                                  <div class="form-group">
+                                    <label for="contain">Company</label>
+                                    <input class="form-control" type="text" id="company-name" name="c"/>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contain">Status</label>
+                                    <input class="form-control" type="text" id="status-state" name="s"/>
+                                  </div>
+                                  <button type="button" class="btn btn-primary" id="adv-search-btn"><span class="fas fa-search" aria-hidden="true"></span></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="search"><span class="fas fa-search" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-
+    <div class="row" style="margin-top:2.5em;">
+        <div class="col-md-12">
+            <div id="search-results">
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

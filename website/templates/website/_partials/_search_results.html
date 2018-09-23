@@ -1,0 +1,44 @@
+{% load static i18n validator %}
+<div class="w-100">
+    <table class="table align-top">
+    <thead>
+      <tr>
+            <th class="w-7 align-top">Company</th>
+            <th class="w-7 align-top">Name of Drug</th>
+            <th class="w-7 align-top">Potential Indication</th>
+            <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% if models.count > 0 %}
+        {% for object in models %}
+      <tr>
+        <td class="w-7 align-top">{{ object.company }}</td>
+        <td class="w-7 align-top">{{ object.name }}</td>
+        <td class="w-7 align-top">{{ object.indication }}</td>
+          <td>
+              {% get_phase object.phase as phase %}
+              <ul class="progress-tracker">
+                <li {% if phase >= 1 %} class="progress-step is-complete" {% else %} class="progress-step" {% endif %}>
+                    <span class="progress-marker">1</span>
+                </li>
+                <li {% if phase >= 2 %} class="progress-step is-complete" {% else %} class="progress-step" {% endif %}>
+                    <span class="progress-marker">2</span>
+                </li>
+                <li {% if phase >= 3 %} class="progress-step is-complete" {% else %} class="progress-step" {% endif %}>
+                    <span class="progress-marker">3</span>
+                </li>
+                <li {% if phase >= 4 %} class="progress-step is-complete" {% else %} class="progress-step" {% endif %}>
+                    <span class="progress-marker">4</span>
+                </li>
+              </ul>
+          </td>
+      </tr>
+        {% endfor %}
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+<div style="margin-top: 100px">
+    <button type="button" class="btn btn-primary" id="export-csv"> {% trans "Export to CSV" %}</button>
+</div>

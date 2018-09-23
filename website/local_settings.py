@@ -25,7 +25,7 @@ LANGUAGE_CODE = 'en'
 TIME_ZONE = "UTC"
 
 #STATIC_ROOT = '/home/username/webapps/<staticdir>/'
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, 'website/static/')
 
 #STATIC_URL = '//www.domain.com/static/'
 STATIC_URL = '/static/'
