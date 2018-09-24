@@ -3,19 +3,21 @@
     <table class="table align-top">
     <thead>
       <tr>
-            <th class="w-7 align-top">Company</th>
-            <th class="w-7 align-top">Name of Drug</th>
-            <th class="w-7 align-top">Potential Indication</th>
-            <th></th>
+            <th class="w-10 align-top">Company</th>
+            <th class="w-10 align-top">Name of Drug</th>
+            <th class="w-10 align-top">Other name of Drug</th>
+            <th class="w-10 align-top">Potential Indication</th>
+            <th class="align-top">Phase</th>
       </tr>
     </thead>
     <tbody>
     {% if models.count > 0 %}
-        {% for object in models %}
-      <tr>
-        <td class="w-7 align-top">{{ object.company }}</td>
-        <td class="w-7 align-top">{{ object.name }}</td>
-        <td class="w-7 align-top">{{ object.indication }}</td>
+      {% for object in models %}
+      <tr data-toggle="collapse" data-target="#accordion-{{object.id}}" class="clickable">
+        <td class="w-10 align-top">{{ object.company }}</td>
+        <td class="w-10 align-top">{{ object.name }}</td>
+        <td class="w-10 align-top">{% if object.sub_name %}{{ object.sub_name }}{% else %}-{% endif %}</td>
+        <td class="w-10 align-top">{% if object.indication %}{{ object.indication }}{% else %}-{% endif %}</td>
           <td>
               {% get_phase object.phase as phase %}
               <ul class="progress-tracker">
@@ -34,7 +36,36 @@
               </ul>
           </td>
       </tr>
-        {% endfor %}
+
+      <tr>
+          <td class="w-10 align-top"></td>
+          <td class="w-10 align-top"></td>
+          <td colspan="3" class="w-80 align-top">
+              <div id="accordion-{{object.id}}" class="collapse">
+                  {% for study in object.studies.all %}
+                <div>
+                <ul>
+                    <li>
+                        <span><b>NCT Number:</b> {{study.nct_id}}</span>
+                    </li>
+                    <li>
+                        <span><b>Status:</b> {{study.status}}</span>
+                    </li>
+                    <li>
+                        <span><b>Phase:</b> {{study.phase}}</span>
+                    </li>
+                    <li>
+                        <span><b>URL:</b> <a href="{{study.url}}">{{study.url}}</a></span>
+                    </li>
+                </ul>
+                </div>
+                  <div class="dropdown-divider"></div>
+                  {% endfor %}
+              </div>
+          </td>
+      </tr>
+
+      {% endfor %}
     {% endif %}
     </tbody>
   </table>

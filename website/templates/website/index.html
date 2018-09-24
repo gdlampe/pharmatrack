@@ -64,9 +64,19 @@
                   },
                   dataType: 'json',
                   success: function (data) {
+                      console.log(data)
                       window.location.href = data.url;
                   }
               });
+            });
+          } );
+    </script>
+    <script type="text/javascript">
+          $( function() {
+            $('.dropdown-menu').on({
+                "click":function(e){
+                  e.stopPropagation();
+                }
             });
           } );
     </script>
@@ -90,7 +100,6 @@
                                     <label for="contain">Status</label>
                                     <input class="form-control" type="text" id="status-state" name="s"/>
                                   </div>
-                                  <button type="button" class="btn btn-primary" id="adv-search-btn"><span class="fas fa-search" aria-hidden="true"></span></button>
                             </div>
                         </div>
                         <button type="button" class="btn btn-primary" id="search"><span class="fas fa-search" aria-hidden="true"></span></button>

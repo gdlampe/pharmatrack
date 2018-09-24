@@ -1,17 +1,22 @@
+import csv
 import json
 import logging
+import os
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, UpdateView
 
 from pharma_track.models import Drug, Study
 from website import settings
+from website.local_settings import STATIC_ROOT, STATIC_URL
 
 logger = logging.getLogger(__name__)
 
@@ -58,14 +63,14 @@ class DrugSearchView(View):
         status = self.request.POST.get('s', '') or ''
         print("Search: {} - {} - {}".format(drug, company, status))
         result_objects = []
-        if drug and status:
+        if status:
             result_objects = Drug.objects.filter(
-                name__icontains=drug,
+                Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
                 company__icontains=company,
                 studies__status__icontains=status).distinct()
-        elif drug:
+        else:
             result_objects = Drug.objects.filter(
-                name__icontains=drug,
+                Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
                 company__icontains=company).distinct()
         context = {
             'models': result_objects
@@ -76,11 +81,87 @@ class DrugSearchView(View):
         return JsonResponse(ret)
 
 
+class DrugExportView(View):
+    def post(self, request, *args, **kwargs):
+        drug = self.request.POST.get('d', '')
+        company = self.request.POST.get('c', '') or ''
+        status = self.request.POST.get('s', '') or ''
+        print("Search: {} - {} - {}".format(drug, company, status))
+        result_objects = []
+        if status:
+            result_objects = Drug.objects.filter(
+                Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
+                company__icontains=company,
+                studies__status__icontains=status).distinct()
+        else:
+            result_objects = Drug.objects.filter(
+                Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
+                company__icontains=company).distinct()
+
+        # Render response
+        res = {
+            'url': ''
+        }
+        file_name = "pharmatrack_drugs_{0}.csv".format(timezone.now().isoformat())
+        path = os.path.join(STATIC_ROOT, file_name)
+        print(path)
+        try:
+            with open(os.path.join(STATIC_ROOT, file_name), 'w+') as ifile:
+                headers = [
+                    'Company',
+                    'Name',
+                    'Other name',
+                    'Potential Indication',
+                    'Phase',
+                    'NCT Number',
+                    'Status',
+                    'URL'
+                ]
+
+                writer = csv.writer(ifile)
+                writer.writerow(headers)
+
+                for drug in result_objects:
+                    for study in drug.studies.all():
+                        data = [
+                            drug.company,
+                            drug.name,
+                            drug.sub_name or '-',
+                            drug.indication or '-',
+                            drug.phase,
+                            study.nct_id,
+                            study.status,
+                            study.url
+                        ]
+                        writer.writerow(data)
+        except Exception as e:
+            print(e)
+        else:
+            res.update({
+                'url': os.path.join(STATIC_URL, file_name)
+            })
+        return JsonResponse(res)
+
+
 def drug_autocomplete(request):
     print(request)
     if request.is_ajax():
         query = request.GET.get("term", "")
-        drugs = Drug.objects.filter(name__icontains=query).values_list('name', flat=True).distinct()[:20]
+        drugs = []
+        drug_name = Drug.objects.filter(name__icontains=query).values_list(
+                'name', flat=True).distinct()[:20]
+        drugs.extend(list(drug_name))
+
+        drug_sub_name = Drug.objects.filter(sub_name__icontains=query).values_list(
+            'sub_name', flat=True).distinct()[:20]
+        drugs.extend(list(drug_sub_name))
+
+        drug_indication = Drug.objects.filter(indication__icontains=query).values_list(
+            'indication', flat=True).distinct()[:20]
+        drugs.extend(list(drug_indication))
+
+        drugs = sorted(list(set(drugs)))[:20]
+
         data = json.dumps(list(drugs))
     mimetype = "application/json"
     return HttpResponse(data, mimetype)
