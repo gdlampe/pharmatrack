@@ -83,7 +83,12 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-	<div class="row">
+    <div class="row" style="margin-top:2.5em;">
+        <div class="col text-center">
+            <img src="{% static 'img/image.png' %}" alt="PharmaTrack" class="img-fluid">
+        </div>
+    </div>
+	<div class="row" style="margin-top:2.5em;">
 		<div class="col-md-12">
             <div class="input-group" id="adv-search">
                 <input type="text" class="form-control" placeholder="Search for drugs" id="drug-name" name="d"/>
