@@ -15,6 +15,7 @@ class DrugAdmin(admin.ModelAdmin):
         'indication',
         'phase',
         'company',
+        'source',
         'version'
     )
     search_fields = (
