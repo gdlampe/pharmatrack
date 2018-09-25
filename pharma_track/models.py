@@ -19,6 +19,7 @@ class Drug(models.Model):
     indication = models.CharField(max_length=400, null=True, blank=True)
     phase = models.CharField(max_length=400, choices=PHASE_CHOICES, default=PHASE_1)
     company = models.CharField(max_length=400, null=True, blank=True)
+    source = models.CharField(max_length=400, null=True, blank=True)
     version = models.PositiveIntegerField(default=1)
 
     created_date = models.DateTimeField(auto_now_add=True)

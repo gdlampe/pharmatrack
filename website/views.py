@@ -102,7 +102,12 @@ class DrugExportView(View):
         res = {
             'url': ''
         }
-        file_name = "pharmatrack_drugs_{0}.csv".format(timezone.now().isoformat())
+        file_name = "pharmatrack_drugs_Drug:{}_Company:{}_Status:{}_{}.csv".format(
+            drug or 'All',
+            company or 'All',
+            status or 'All',
+            timezone.now().isoformat()
+        )
         path = os.path.join(STATIC_ROOT, file_name)
         print(path)
         try:
@@ -122,6 +127,19 @@ class DrugExportView(View):
                 writer.writerow(headers)
 
                 for drug in result_objects:
+                    if drug.studies.all().count() == 0:
+                        tdata = [
+                            drug.company,
+                            drug.name,
+                            drug.sub_name or '-',
+                            drug.indication or '-',
+                            drug.phase,
+                            '-',
+                            '-',
+                            '-'
+                        ]
+                        writer.writerow(tdata)
+
                     for study in drug.studies.all():
                         data = [
                             drug.company,

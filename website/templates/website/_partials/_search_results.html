@@ -42,6 +42,11 @@
           <td class="w-10 align-top"></td>
           <td colspan="3" class="w-80 align-top">
               <div id="accordion-{{object.id}}" class="collapse">
+                  {% if object.studies.all.count == 0 %}
+                  <div style="font-style:italic;">
+                      No Trial info yet.
+                  </div>
+                  {% endif %}
                   {% for study in object.studies.all %}
                 <div>
                 <ul>

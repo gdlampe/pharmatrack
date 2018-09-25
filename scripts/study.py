@@ -57,14 +57,14 @@ def _study_scrap(drug):
     if drug.name:
         params['intr'] = drug.name
 
-    if drug.phase:
-        try:
-            phase = int(drug.phase.split()[1]) - 1
-        except Exception:
-            pass
-        else:
-            params['phase'] = phase
-    print(params)
+    # if drug.phase:
+    #     try:
+    #         phase = int(drug.phase.split()[1]) - 1
+    #     except Exception:
+    #         pass
+    #     else:
+    #         params['phase'] = phase
+    # print(params)
     r = requests.get(request_url, params=params)
     df = pd.read_csv(io.StringIO(r.text), skiprows=1, names=headers)
     return df
@@ -102,6 +102,17 @@ def save_study(drug, data):
     study.study_documents = data.study_documents
     study.url = data.url
     study.save()
+
+    phase = drug.phase
+    try:
+        pno = study.phase.split()[-1]
+        tp = 'Phase {}'.format(pno)
+        if tp > phase:
+            drug.phase = tp
+            drug.version += 1
+            drug.save()
+    except Exception as e:
+        pass
 
 def run():
     drugs = Drug.objects.all()

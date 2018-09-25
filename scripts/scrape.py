@@ -72,6 +72,8 @@ def _roche_scrap():
             print(e)
             data['company'].append(None)
 
+        data['source'].append('Roche')
+
     df = pd.DataFrame(data)
     return df
 
@@ -146,6 +148,7 @@ def _gilead_scrap():
         company = 'Gilead Sciences'
         data['company'].append(company)
 
+        data['source'].append('Gilead')
 
     df = pd.DataFrame(data)
     return df
@@ -157,9 +160,10 @@ def save_drug(data):
         Drug(name=data.name, sub_name=data.sub_name, indication=data.indication, phase=data.phase,
              company=data.company).save()
     else:
-        if not (drug.phase == data.phase and drug.company == data.company):
+        if not (drug.phase == data.phase and drug.company == data.company and drug.source == data.source):
             drug.phase = data.phase
             drug.company = data.company
+            drug.source = data.source
             drug.version += 1
             drug.save()
 
