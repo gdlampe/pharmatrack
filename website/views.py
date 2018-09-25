@@ -91,12 +91,12 @@ class DrugExportView(View):
         if status:
             result_objects = Drug.objects.filter(
                 Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
-                company__icontains=company,
+                source__icontains=company,
                 studies__status__icontains=status).distinct()
         else:
             result_objects = Drug.objects.filter(
                 Q(name__icontains=drug) | Q(sub_name__icontains=drug) | Q(indication__icontains=drug),
-                company__icontains=company).distinct()
+                source__icontains=company).distinct()
 
         # Render response
         res = {
@@ -129,7 +129,7 @@ class DrugExportView(View):
                 for drug in result_objects:
                     if drug.studies.all().count() == 0:
                         tdata = [
-                            drug.company,
+                            drug.source,
                             drug.name,
                             drug.sub_name or '-',
                             drug.indication or '-',
@@ -142,7 +142,7 @@ class DrugExportView(View):
 
                     for study in drug.studies.all():
                         data = [
-                            drug.company,
+                            drug.source,
                             drug.name,
                             drug.sub_name or '-',
                             drug.indication or '-',
@@ -189,7 +189,7 @@ def company_autocomplete(request):
     print(request)
     if request.is_ajax():
         query = request.GET.get("term", "")
-        companies = Drug.objects.filter(company__icontains=query).values_list('company', flat=True).distinct()[:20]
+        companies = Drug.objects.filter(source__icontains=query).values_list('source', flat=True).distinct()[:20]
         data = json.dumps(list(companies))
     mimetype = "application/json"
     return HttpResponse(data, mimetype)
