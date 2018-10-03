@@ -12,7 +12,7 @@ Crawl drug from sources: `roche`, `gilead` and `pfizer`
 
 Update maximum load page to crawl for pfizer:
 
-[setting page](gdlampe/pharmatrack/blob/master/scripts/pfizer_header.py#L25)
+[setting page](scripts/pfizer_header.py#L25)
 
 `MAX_LOOP_PAGE = 2`
 
