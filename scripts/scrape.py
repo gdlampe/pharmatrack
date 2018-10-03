@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from pharma_track.models import Drug
+from scripts.pfizer_header import HIT_URL, IPAYLOAD, CRAWL_URL, PAYLOAD, HEADERS, MAX_LOOP_PAGE
 
 
 def _fetch_data(request_url, regex):
@@ -75,6 +76,7 @@ def _roche_scrap():
         data['source'].append('Roche')
 
     df = pd.DataFrame(data)
+    print(df)
     return df
 
 
@@ -151,14 +153,105 @@ def _gilead_scrap():
         data['source'].append('Gilead')
 
     df = pd.DataFrame(data)
+    print (df)
     return df
 
+def _pfizer_fetch_data(crawl_data):
+    regex = re.compile('odd|even')
+    soup = BeautifulSoup(crawl_data, features="lxml")
+    g_data = soup.find_all("tr", {"class": regex})
+    data = defaultdict(list)
+
+    for content in g_data:
+        name = content.find("div", {"class": "compound-name"})
+        sub_name = content.find("td", {"class": "views-field views-field-field-ugcf-compound-type"})
+        indication = content.find("td", {"class": "views-field views-field-field-ugcf-indication"})
+        phase = content.find("td", {"class": "views-field views-field-field-ugcf-phase-of-development"})
+
+        # Parse name
+        try:
+            data['name'].append(name.text.strip())
+        except Exception as e:
+            print(e)
+            data['name'].append(None)
+
+        # Parse subName
+        try:
+            data['sub_name'].append(sub_name.text.strip())
+        except Exception as e:
+            print(e)
+            data['sub_name'].append(None)
+
+        # Parse indication
+        try:
+            data['indication'].append(indication.text.strip())
+        except Exception as e:
+            print(e)
+            data['indication'].append(None)
+
+        # Parse phase
+        try:
+            pphase = {
+                "Registration": "Phase 4"
+            }.get(phase.text.strip(), phase.text.strip())
+
+            data['phase'].append(pphase)
+
+        except Exception as e:
+            print(e)
+            data['phase'].append(None)
+
+        data['company'].append('Pfizer')
+        data['source'].append('Pfizer')
+
+    df = pd.DataFrame(data)
+    print(df)
+    return df
+
+def _pfizer_scrap():
+    """ Crawling from pf
+
+    :return: pandas data
+    """
+    hit_url = HIT_URL
+    crawl_url = CRAWL_URL
+    init_payload = IPAYLOAD
+    payload = PAYLOAD
+    headers = HEADERS
+    max_page = MAX_LOOP_PAGE
+
+    session = requests.session()
+    session.get(hit_url)
+
+    for counter in range(max_page):
+        if not counter:
+            pload = init_payload
+        else:
+            pload = payload.format(counter)
+        response = session.post(crawl_url, data=pload, headers=headers)
+        crawl_data = ""
+        if response.status_code == 200:
+            data = response.json()
+            for d in data:
+                if d.get('command', '') == 'viewsLoadMoreAppend' or d.get('command', '') == 'insert':
+                    if not d.get('data'):
+                        break
+                    crawl_data = ''.join(map(str, [crawl_data, d.get('data')]))
+
+        if crawl_data:
+            pfizer_data = _pfizer_fetch_data(crawl_data)
+            for data in pfizer_data.itertuples():
+                save_drug(data)
+        elif not crawl_data and not counter:
+            pass
+        else:
+            break
 
 def save_drug(data):
     drug = Drug.objects.filter(name=data.name, sub_name=data.sub_name, indication=data.indication).first()
     if not drug:
         Drug(name=data.name, sub_name=data.sub_name, indication=data.indication, phase=data.phase,
-             company=data.company).save()
+             company=data.company, source=data.source).save()
     else:
         if not (drug.phase == data.phase and drug.company == data.company and drug.source == data.source):
             drug.phase = data.phase
@@ -167,13 +260,20 @@ def save_drug(data):
             drug.version += 1
             drug.save()
 
-def run():
-    roche_data = _roche_scrap()
-    for data in roche_data.itertuples():
-        save_drug(data)
+def run(*args):
+    if 'roche' in args:
+        print('START CRAWLING FROM ROCHE')
+        roche_data = _roche_scrap()
+        for data in roche_data.itertuples():
+            save_drug(data)
 
-    gilead_data = _gilead_scrap()
-    for data in gilead_data.itertuples():
-        save_drug(data)
+    if 'gilead' in args:
+        print('START CRAWLING FROM GILEAD')
+        gilead_data = _gilead_scrap()
+        for data in gilead_data.itertuples():
+            save_drug(data)
 
+    if 'pfizer' in args:
+        print('START CRAWLING FROM PFIZER')
+        _pfizer_scrap()
 
