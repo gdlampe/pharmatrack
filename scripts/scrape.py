@@ -154,6 +154,7 @@ def _gilead_scrap():
         data['source'].append('Gilead')
 
     df = pd.DataFrame(data)
+    print (df.encode('utf-8'))
     return df
 
 def _pfizer_fetch_data(crawl_data):

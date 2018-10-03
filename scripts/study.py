@@ -64,7 +64,7 @@ def _study_scrap(drug):
             pass
         else:
             params['phase'] = phase
-    print(params)
+    print(params.encode('utf-8'))
     r = requests.get(request_url, params=params)
     df = pd.read_csv(io.StringIO(r.text), skiprows=1, names=headers)
     return df
