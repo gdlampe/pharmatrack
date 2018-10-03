@@ -1,3 +1,4 @@
+
 import re
 from collections import defaultdict
 import requests
@@ -153,7 +154,6 @@ def _gilead_scrap():
         data['source'].append('Gilead')
 
     df = pd.DataFrame(data)
-    print (df)
     return df
 
 def _pfizer_fetch_data(crawl_data):
